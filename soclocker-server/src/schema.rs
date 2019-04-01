@@ -1,4 +1,6 @@
-#![allow(non_snake_case)]
+//! This file automatically generates the configuration for the database and how
+//! it is interacted with by the Diesel crate.
+#![allow(non_snake_case, missing_docs)]
 
 table! {
     Users (ID) {
