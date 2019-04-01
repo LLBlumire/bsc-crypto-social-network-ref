@@ -1,0 +1,8 @@
+(
+    pkc::PublicKey(base64::decode(
+        "PUBLIC+KEY+BASE64+GOES+HERE++++++++++++++++="
+    )),
+    pkc::SecretKey(base64::decode(
+        "SECRET+KEY+BASE64+GOES+HERE++++++++++++++++="
+    )),
+)

@@ -1,0 +1,34 @@
+[package]
+name = "soclocker-server"
+version = "0.1.0"
+authors = ["Lucille Blumire <llblumire@gmail.com>"]
+edition = "2018"
+
+[dependencies.rocket]
+version = "*"
+
+[dependencies.rocket_contrib]
+version = "*"
+default-features = false
+features = ["diesel_sqlite_pool", "serve", "json"]
+
+[dependencies.diesel]
+version = "*"
+features = ["sqlite", "chrono"]
+
+[dependencies.sodiumoxide]
+version = "*"
+
+[dependencies.base64]
+version = "*"
+
+[dependencies.serde]
+version = "*"
+features = ["derive"]
+
+[dependencies.rand]
+version = "*"
+
+[dependencies.chrono]
+version = "*"
+features = ["serde"]

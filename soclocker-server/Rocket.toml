@@ -1,0 +1,6 @@
+[global]
+databases = { core_db = { url = ".\\datastores\\devel.sqlite" } }
+
+[development]
+address = "localhost"
+port = 9000

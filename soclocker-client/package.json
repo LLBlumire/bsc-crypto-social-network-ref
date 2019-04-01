@@ -1,0 +1,69 @@
+{
+  "name": "soclocker-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@stablelib/base64": "^0.7.2",
+    "axios": "^0.18.0",
+    "tweetnacl": "^1.0.1",
+    "vue": "^2.6.6",
+    "vue-router": "^3.0.1",
+    "vuetify": "^1.5.8",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.5.0",
+    "@vue/cli-plugin-eslint": "^3.5.0",
+    "@vue/cli-plugin-typescript": "^3.5.0",
+    "@vue/cli-service": "^3.5.0",
+    "@vue/eslint-config-prettier": "^4.0.1",
+    "@vue/eslint-config-typescript": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "typescript": "^3.2.1",
+    "vue-template-compiler": "^2.5.21"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "@vue/prettier",
+      "@vue/typescript"
+    ],
+    "parserOptions": {
+      "parser": "@typescript-eslint/parser"
+    },
+    "rules": {
+      "vue/html-closing-bracket-newline": "error",
+      "vue/html-indent": "error",
+      "vue/html-quotes": "error",
+      "vue/mustache-interpolation-spacing": "error",
+      "vue/no-confusing-v-for-v-if": "error",
+      "vue/brace-style": "error",
+      "vue/camelcase": "error",
+      "vue/eqeqeq": "error",
+      "vue/script-indent": "error"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}

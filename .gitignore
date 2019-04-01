@@ -1,0 +1,6 @@
+.vscode/*
+
+*.code-workspace
+build.cmd
+
+soclocker-server/src/server_keys
