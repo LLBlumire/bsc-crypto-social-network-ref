@@ -30,9 +30,9 @@ The full paper detailing this, and the ideas behind it, can be found here:
 
 This software is licensed under [Fair Source 25](https://fair.io/). This is
 intended to allow the usage of the source code in academic study, while
-preserving the rights of the Sole Proprietor (Lucille Lillian Blumire) to sell
-and use commercially this software.
+preserving the rights of the licensor to sell and use commercially this
+software.
 
 You are free to use (commercially or otherwise) the software with up to 25 
-users. Any usage exceeding this limit requires contacting me to negotiate
-licensing terms, and may incur a fee subject to usage.
+users. Any usage exceeding this limit requires contacting the licensor to
+negotiate licensing terms, and may incur a fee subject to usage.
