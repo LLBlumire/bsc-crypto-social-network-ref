@@ -1,3 +1,9 @@
+/**
+ * This program specifies a reference implementation of the front end of a 
+ * social media service that has no server-side knowledge of its users 
+ * authentication credentials.
+ */
+
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";

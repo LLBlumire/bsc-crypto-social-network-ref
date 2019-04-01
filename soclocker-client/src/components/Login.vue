@@ -72,6 +72,10 @@
 import Vue from "vue";
 import { mapState, mapActions } from "vuex";
 
+/**
+ * Controls the login dialogue and performs the login operations. Most procedure
+ * of the login operation is offloaded to the vuex store.
+ */
 export default Vue.extend({
   name: "login",
   data(): {
@@ -107,6 +111,9 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions(["handleLogin"]),
+    /**
+     * Initiates the login process.
+     */
     login() {
       if (!this.validLoginForm) {
         this.loginWarnNotice = true;
@@ -117,16 +124,29 @@ export default Vue.extend({
         secretKeyB64: this.secretKey
       });
     },
+
+    /**
+     * Opens the login dialog.
+     */
     show() {
       this.showLogin = true;
     }
   },
   watch: {
+    /**
+     * On an incrementing of the failed login count, display the failed login 
+     * notice.
+     */
     loginAttemptFails(newLoginAttemptFails, oldLoginAttemptFails) {
       if (newLoginAttemptFails > oldLoginAttemptFails) {
         this.loginFailNotice = true;
       }
     },
+
+    /**
+     * Dismisses the login dialog if the user becomes logged in. As well as 
+     * notifying the user of their successful login.
+     */
     isLoggedIn(loggedIn) {
       if (loggedIn) {
         this.loginSuccessNotice = true;

@@ -13,6 +13,9 @@
 import Vue from 'vue'
 import { mapActions } from "vuex";
 
+/**
+ * Handles logout notifications and the logout process.
+ */
 export default Vue.extend({
   name: 'logout',
   data (): {
@@ -24,6 +27,9 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions(["handleLogout"]),
+    /**
+     * Logs the user out.
+     */
     logout(): void {
       this.logoutInfoNotice = true;
       (<any>this).handleLogout()

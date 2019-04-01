@@ -26,6 +26,10 @@
 import Vue from "vue";
 import { mapState } from "vuex";
 
+/**
+ * Creates the Top Bar of the application. Used for navigation and actions such
+ * as logging in and out.
+ */
 export default Vue.extend({
   name: "top-bar",
   computed: {

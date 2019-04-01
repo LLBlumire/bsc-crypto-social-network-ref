@@ -144,6 +144,12 @@ export default Vue.extend({
       'isLoggedIn',
       'loginAttemptFails'
     ]),
+    /**
+     * Determines the rules for username validation.
+     * 1. A username must not be empty
+     * 2. A username must not have exactly 44 characters
+     * 3. A username must not be a duplicate of one already registered
+     */
     usernameRules (): ((v: string) => boolean | string)[] {
       return [
         (v: string) => !!v || 'Username is Required',
@@ -151,6 +157,12 @@ export default Vue.extend({
         (v: string) => !this.usernameExists || 'Username already exists'
       ]
     },
+
+    /**
+     * Determines if the alert notifying of a secret key registration should
+     * be displayed. That is to say to display the secret key one final time
+     * if the user has registered in a given session.
+     */
     showRegisteredSecretKey: {
       get(): boolean {
         return this.registeredSecretKey !== ""
@@ -163,6 +175,10 @@ export default Vue.extend({
     }
   },
   watch: {
+    /**
+     * On changes to the username, attempt to validate the username and verify
+     * that it does not already exist.
+     */
     username (username) {
       axios.get('/_/user', { params: { username: username } }).then(() => {
         this.usernameExists = true;
@@ -177,11 +193,19 @@ export default Vue.extend({
     ...mapActions([
       'handleLogin'
     ]),
+
+    /**
+     * Displays the registration dialog.
+     */
     show() {
       this.showRegister = true;
       (<any>this.$refs.form).validate()
       this.genKey();
     },
+
+    /**
+     * Registers the account
+     */
     register() {
       axios.post('/_/user', {
         username: this.username,
@@ -194,6 +218,10 @@ export default Vue.extend({
         this.registerErrorNotice = true
       })
     },
+
+    /**
+     * Generates a new keypair for registration.
+     */
     genKey() {
       let { publicKey, secretKey } = nacl.box.keyPair()
       this.publicKey = base64.encode(publicKey)
