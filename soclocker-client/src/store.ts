@@ -4,6 +4,7 @@ import axios from "axios";
 import nacl from "tweetnacl";
 import * as base64 from "@stablelib/base64";
 import { AuthResponse, UserResponse } from "@/model.ts";
+import { getProof } from "@/auther.ts";
 
 Vue.use(Vuex);
 
@@ -12,6 +13,7 @@ export default new Vuex.Store({
     username: new String(),
     publicKey: new Uint8Array(),
     secretKey: new Uint8Array(),
+    userId: 0,
     loginAttemptFails: 0,
     isLoggedIn: false
   },
@@ -24,6 +26,7 @@ export default new Vuex.Store({
       state.username = new String();
       state.secretKey = new Uint8Array();
       state.publicKey = new Uint8Array();
+      state.userId = 0;
       state.loginAttemptFails = 0;
       state.isLoggedIn = false;
     },
@@ -31,8 +34,8 @@ export default new Vuex.Store({
     /**
      * Logs the user into the website
      * @param state Internal vuex state.
-     * @param credentials Object containing the users username and their secret 
-     *   key as a byte array. 
+     * @param credentials Object containing the users username and their secret
+     *   key as a byte array.
      */
     login(
       state,
@@ -40,15 +43,18 @@ export default new Vuex.Store({
         username,
         publicKey,
         secretKey,
+        userId
       }: {
         username: string;
         publicKey: Uint8Array;
         secretKey: Uint8Array;
+        userId: number;
       }
     ) {
       state.username = username;
       state.secretKey = secretKey;
       state.publicKey = publicKey;
+      state.userId = userId;
       state.loginAttemptFails = 0;
       state.isLoggedIn = true;
     },
@@ -67,7 +73,10 @@ export default new Vuex.Store({
      * @param actionContext Internal vuex context.
      */
     handleLogout({ commit }) {
-      commit("logout");
+      return new Promise((resolve, reject) => {
+        commit("logout");
+        resolve();
+      });
     },
     /**
      * Logs the user in based on their username and secret key.
@@ -75,88 +84,59 @@ export default new Vuex.Store({
      * @param credentials Object containing the users username and their secret
      *   key as a base64 encoded string.
      */
-    handleLogin(
+    async handleLogin(
       { commit },
       {
         username,
-        secretKeyB64,
+        secretKeyB64
       }: {
         username: string;
         secretKeyB64: string;
       }
     ) {
-      // Acquire the servers public key
-      axios
-        .get("/_/server_public_key")
-        .then(spk => {
-          let serverPublicKeyB64: string = spk.data;
-          // Have the server generate a challenge proof
-          axios
-            .get("/_/auth", { params: { username: username } })
-            .then(auth => {
-              let authResponseB64: AuthResponse = auth.data;
-              let encryptedToken: Uint8Array = base64.decode(
-                authResponseB64.encryptedToken
-              );
-              let nonce: Uint8Array = base64.decode(authResponseB64.nonce);
-              let serverPublicKey: Uint8Array = base64.decode(
-                serverPublicKeyB64
-              );
-              let localSecretKey: Uint8Array = base64.decode(secretKeyB64);
-              let box: Uint8Array | null = nacl.box.open(
-                encryptedToken,
-                nonce,
-                serverPublicKey,
-                localSecretKey
-              );
-              if (box === null) {
-                commit("incrementLoginFails");
-                return;
-              }
-              let decryptedToken: string = base64.encode(box);
-              // Send the server the completed challenge as proof of identity.
-              axios
-                .post("/_/auth", {
-                  decryptedToken: decryptedToken,
+      try {
+        let localSecretKey = base64.decode(secretKeyB64)
+        let box = await getProof(username, localSecretKey)
+
+        // Encode the decrypted token
+        let decryptedToken: string = base64.encode(box)
+
+        // Ask the server to validate the token
+        let loginValid: boolean = (
+          await axios.post(
+            "/_/auth", 
+            {
+              decryptedToken: decryptedToken,
+              username: username
+            }
+          )
+        ).data;
+
+        if (loginValid) {
+          // If the validation succeeds, set the login information
+          let user: UserResponse = (
+            await axios.get(
+              "/_/user", 
+              {
+                params: {
                   username: username
-                })
-                .then(res => {
-                  let loginValid: boolean = res.data;
-                  if (loginValid) {
-                    // Get the users public key
-                    axios.get("/_/user", {
-                      params: {
-                        username: username
-                      }
-                    })
-                    .then((res) => {
-                      let user = <UserResponse>res.data;
-                      let localPublicKey = base64.decode(user.publicKey);
-                      commit("login", {
-                        username: username,
-                        publicKey: localPublicKey,
-                        secretKey: localSecretKey,
-                      });  
-                    })
-                  } else {
-                    commit("incrementLoginFails");
-                    return;
-                  }
-                })
-                .catch(() => {
-                  commit("incrementLoginFails");
-                  return;
-                });
-            })
-            .catch(() => {
-              commit("incrementLoginFails");
-              return;
-            });
-        })
-        .catch(() => {
-          commit("incrementLoginFails");
-          return;
-        });
+                }
+              }
+            )
+          ).data;
+          let localPublicKey: Uint8Array = base64.decode(user.publicKey);
+          commit("login", {
+            username: username,
+            publicKey: localPublicKey,
+            secretKey: localSecretKey,
+            id: user.id
+          });
+        } else {
+          throw new Error('Login authentication was invalid')
+        }
+      } catch { 
+        commit("incrementLoginFails");   
+      }
     }
   }
 });

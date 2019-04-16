@@ -97,6 +97,7 @@
               type="submit"
               color="primary"
               :disabled="!valid"
+              :loading="isRegistering"
             >
               Register
             </v-btn>
@@ -126,6 +127,7 @@ export default Vue.extend({
     registerSuccessNotice: boolean,
     registerErrorNotice: boolean,
     registeredSecretKey: string,
+    isRegistering: boolean
   } {
     return {
       username: "",
@@ -136,7 +138,8 @@ export default Vue.extend({
       valid: false,
       registerSuccessNotice: false,
       registerErrorNotice: false,
-      registeredSecretKey: ""
+      registeredSecretKey: "",
+      isRegistering: false,
     }
   },
   computed: {
@@ -179,14 +182,20 @@ export default Vue.extend({
      * On changes to the username, attempt to validate the username and verify
      * that it does not already exist.
      */
-    username (username) {
-      axios.get('/_/user', { params: { username: username } }).then(() => {
-        this.usernameExists = true;
-        (<any>this.$refs.form).validate()
+    async username (username) {
+      this.usernameExists = await axios.get(
+        '/_/user',
+        {
+          params: {
+            username: username 
+          } 
+        }
+      ).then(() => {
+        return true;
       }).catch(() => {
-        this.usernameExists = false;
-        (<any>this.$refs.form).validate()
-      })
+        return false;
+      });
+      (<any>this.$refs.form).validate()
     }
   },
   methods: {
@@ -207,10 +216,14 @@ export default Vue.extend({
      * Registers the account
      */
     register() {
-      axios.post('/_/user', {
-        username: this.username,
-        publicKey: this.publicKey
-      }).then(() => {
+      this.isRegistering = true
+      axios.post(
+        '/_/user', {
+          username: this.username,
+          publicKey: this.publicKey
+        }
+      ).then(() => {
+        this.isRegistering = false
         this.showRegister = false
         this.registerSuccessNotice = true
         this.registeredSecretKey = this.secretKey

@@ -9,7 +9,7 @@
     </router-link>
     <v-spacer></v-spacer>
     <v-toolbar-items>
-      <v-btn to="/" exact flat>Public Feed</v-btn>
+      <v-btn to="/" exact flat>Public</v-btn>
       <template v-if="isLoggedIn">
         <v-btn to="/feed" exact flat>My Feed</v-btn>
         <v-btn @click="$emit('logout')" flat>Logout</v-btn>

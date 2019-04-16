@@ -38,7 +38,19 @@ fn main() {
         .manage(server_public)
         .manage(server_secret)
         .attach(CoreDbConn::fairing())
-        .mount("/_", routes![server_public_key::get, auth::get, auth::post, user::get, user::post])
+        .mount(
+            "/_",
+            routes![
+                server_public_key::get,
+                auth::get,
+                auth::post,
+                user::get,
+                user::post,
+                post::post,
+                post::put,
+                noa::get,
+            ],
+        )
         .mount("/", StaticFiles::from(args().skip(1).next().unwrap_or("static".to_string())))
         .launch();
 }

@@ -25,7 +25,13 @@ use rocket_contrib::json::Json;
 ///
 /// or `404 Not Found` if the user does not exist.
 #[get("/user?<username>")]
-pub fn get(conn: CoreDbConn, username: String) -> Option<Json<User>> {
+pub fn get<'a>(conn: CoreDbConn, username: String) -> Option<Json<User>> {
+    // ```json
+    // Select ID, PublicKey, Username
+    // FROM Users
+    // WHERE Username = {username}
+    // LIMIT 1
+    // ```
     Some(Json(Users.filter(Username.eq(&username)).first::<User>(&conn.0).ok()?))
 }
 
@@ -43,6 +49,7 @@ pub fn get(conn: CoreDbConn, username: String) -> Option<Json<User>> {
 /// exists, and `500 Internal Server Error` if there is a database error.
 #[post("/user", data = "<user_data>")]
 pub fn post(conn: CoreDbConn, user_data: Json<UserInsert>) -> Result<Status, Status> {
+    // SELECT Username FROM User WHERE Username = {user_data.username}
     if Users.filter(Username.eq(&user_data.username)).first::<User>(&conn.0).is_ok() {
         return Err(Status::Conflict);
     }

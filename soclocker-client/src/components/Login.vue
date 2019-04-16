@@ -60,7 +60,14 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn type="submit" color="primary" flat>Login</v-btn>
+            <v-btn
+              type="submit"
+              color="primary"
+              flat
+              :loading="loggingIn"
+            >
+              Login
+            </v-btn>
           </v-card-actions>
         </v-form>
       </v-card>
@@ -89,6 +96,7 @@ export default Vue.extend({
     secretKeyRules: ((v: string) => boolean | string)[];
     validLoginForm: boolean;
     showLogin: boolean;
+    loggingIn: boolean;
   } {
     return {
       username: "",
@@ -103,7 +111,8 @@ export default Vue.extend({
       ],
       secretKeyRules: [(v: string) => !!v || "Secret Key is required"],
       validLoginForm: true,
-      showLogin: false
+      showLogin: false,
+      loggingIn: false,
     };
   },
   computed: {
@@ -111,18 +120,21 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions(["handleLogin"]),
+
     /**
      * Initiates the login process.
      */
-    login() {
+    async login() {
+      this.loggingIn = true;
       if (!this.validLoginForm) {
         this.loginWarnNotice = true;
         return;
       }
-      this.handleLogin({
+      await this.handleLogin({
         username: this.username,
         secretKeyB64: this.secretKey
       });
+      this.loggingIn = false;
     },
 
     /**
@@ -134,7 +146,7 @@ export default Vue.extend({
   },
   watch: {
     /**
-     * On an incrementing of the failed login count, display the failed login 
+     * On an incrementing of the failed login count, display the failed login
      * notice.
      */
     loginAttemptFails(newLoginAttemptFails, oldLoginAttemptFails) {
@@ -144,7 +156,7 @@ export default Vue.extend({
     },
 
     /**
-     * Dismisses the login dialog if the user becomes logged in. As well as 
+     * Dismisses the login dialog if the user becomes logged in. As well as
      * notifying the user of their successful login.
      */
     isLoggedIn(loggedIn) {

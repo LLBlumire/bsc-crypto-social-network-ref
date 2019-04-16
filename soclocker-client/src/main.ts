@@ -1,6 +1,6 @@
 /**
- * This program specifies a reference implementation of the front end of a 
- * social media service that has no server-side knowledge of its users 
+ * This program specifies a reference implementation of the front end of a
+ * social media service that has no server-side knowledge of its users
  * authentication credentials.
  */
 

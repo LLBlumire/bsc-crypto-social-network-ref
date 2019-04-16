@@ -36,25 +36,23 @@ type Validator = [u8; 32];
 /// provides the encrypted data used for this verification as described beneath.
 #[post("/auth", data = "<verify>")]
 pub fn post(conn: CoreDbConn, verify: Json<AuthValidate>) -> Json<bool> {
-    Json(
-        // Asserts that
-        // ```sql
-        // SELECT COUNT(Username)
-        // FROM Auth
-        // WHERE Username = <verify>.username
-        // AND ExpectedToken = <verivy>.decrypted_token
-        // ```
-        // is not equal to zero, which is to say that an instance matching the
-        // authentication token supplied can be found, and thus the auth is
-        // valid.
-        Users
-            .inner_join(Auth.on(UsersPublicKey.eq(AuthPublicKey)))
-            .select(dsl::count(Username))
-            .filter(Username.eq(&verify.username))
-            .filter(ExpectedToken.eq(&verify.decrypted_token))
-            .first::<i64>(&conn.0)
-            != Ok(0),
-    )
+    return Json(auth_internal(&conn, &verify.decrypted_token, &verify.username));
+}
+
+pub fn auth_internal(conn: &CoreDbConn, token: &str, username: &str) -> bool {
+    let auth_valid: bool = Users
+        .inner_join(Auth.on(UsersPublicKey.eq(AuthPublicKey)))
+        .select(dsl::count(Username))
+        .filter(Username.eq(username))
+        .filter(ExpectedToken.eq(token))
+        .first::<i64>(&conn.0)
+        != Ok(0);
+
+    if auth_valid {
+        diesel::delete(Auth.filter(ExpectedToken.eq(token))).execute(&conn.0).unwrap();
+    }
+
+    return auth_valid;
 }
 
 /// The `auth` endpoint can be sent a GET request with a query string specifying
@@ -78,7 +76,6 @@ pub fn post(conn: CoreDbConn, verify: Json<AuthValidate>) -> Json<bool> {
 pub fn get(
     conn: CoreDbConn,
     username: String,
-    server_public: State<pkc::PublicKey>,
     server_secret: State<pkc::SecretKey>,
 ) -> Result<Json<AuthResponse>, Status> {
     let now = Utc::now().naive_utc();
@@ -94,6 +91,7 @@ pub fn get(
     // FROM Auth
     // LEFT JOIN Users ON Users.PublicKey = Auth.PublicKey
     // WHERE Username = <username>
+    // LIMIT 1
     // ```
     match Users
         .left_join(Auth.on(UsersPublicKey.eq(AuthPublicKey)))
@@ -117,7 +115,7 @@ pub fn get(
                 diesel::delete(Auth.filter(AuthPublicKey.eq(public_key)))
                     .execute(&conn.0)
                     .map_err(|_| Status::InternalServerError)?;
-                return get(conn, username, server_public, server_secret);
+                return get(conn, username, server_secret);
             }
             // Otherwise, the user has a pre-existing authentication token and
             // it has not timed out, and thus can be re-used. Evaluate the users
@@ -156,7 +154,7 @@ pub fn get(
             // Trigger a new internal GET request on this endpoint to process
             // the users request again with a valid and non timed out method of
             // authentication having been generated for them.
-            return get(conn, username, server_public, server_secret);
+            return get(conn, username, server_secret);
         },
 
         // In the event the user does not exist, respond with a NotFound error.

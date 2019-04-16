@@ -6,13 +6,24 @@
       <login ref="login" />
       <register ref="register" />
       <logout ref="logout" />
-      <router-view />
+      <v-container>
+        <v-layout>
+          <v-flex 
+            xs12 
+            lg10 offset-lg1
+            xl8 offset-xl2
+          >
+            <router-view @register="register" />
+          </v-flex>
+        </v-layout>
+      </v-container>
     </v-content>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapState } from 'vuex'
 import Login from '@/components/Login.vue'
 import Register from '@/components/Register.vue'
 import Logout from '@/components/Logout.vue'
@@ -30,6 +41,9 @@ export default Vue.extend({
     Register,
     TopBar,
     Logout
+  },
+  computed: {
+    ...mapState(["isLoggedIn"])
   },
   methods: {
     /**
@@ -52,6 +66,18 @@ export default Vue.extend({
      */
     register (): void {
       (<any>this.$refs.register).show()
+    }
+  },
+  watch: {
+    /**
+     * Handle changing the page when the user logs in and out.
+     */
+    isLoggedIn(isLoggedIn) {
+      if (isLoggedIn) {
+        this.$router.push({ name: 'feed' })
+      } else {
+        this.$router.push({ name: 'public' })
+      }
     }
   }
 })
