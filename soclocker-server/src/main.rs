@@ -28,7 +28,7 @@ const TIMEOUT_SECONDS: i64 = 3600;
 /// seen in `server_keys.example`.
 fn main() {
     sodiumoxide::init().unwrap();
-    let (server_public, server_secret) = pkc::gen_keypair();
+    let (server_public, server_secret) = include!("server_keys");
     println!(
         "Starting Server With: {:?} / {:?}",
         base64::encode(&server_secret.0),

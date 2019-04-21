@@ -1,8 +1,16 @@
-(
-    pkc::PublicKey(base64::decode(
-        "PUBLIC+KEY+BASE64+GOES+HERE++++++++++++++++="
-    )),
-    pkc::SecretKey(base64::decode(
-        "SECRET+KEY+BASE64+GOES+HERE++++++++++++++++="
-    )),
-)
+{
+    fn bytes(bytes: &[u8]) -> [u8; 32] {
+        let mut array = [0; 32];
+        let bytes = &bytes[..array.len()];
+        array.copy_from_slice(bytes);
+        array
+    }
+    (
+        pkc::PublicKey(bytes(&base64::decode(
+	    "PUBLIC+KEY+BASE64+GOES+HERE++++++++++++++++="
+        ).unwrap())),
+        pkc::SecretKey(bytes(&base64::decode(
+            "SECRET+KEY+BASE64+GOES+HERE++++++++++++++++="
+        ).unwrap())),
+    )
+}
