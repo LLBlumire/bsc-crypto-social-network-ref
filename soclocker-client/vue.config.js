@@ -1,3 +1,4 @@
 module.exports = {
-  lintOnSave: undefined
+  lintOnSave: undefined,
+  publicPath: ""
 };

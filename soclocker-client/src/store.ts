@@ -95,35 +95,25 @@ export default new Vuex.Store({
       }
     ) {
       try {
-        let localSecretKey = base64.decode(secretKeyB64)
-        let box = await getProof(username, localSecretKey)
+        let localSecretKey = base64.decode(secretKeyB64);
+        let box = await getProof(username, localSecretKey);
 
         // Encode the decrypted token
-        let decryptedToken: string = base64.encode(box)
+        let decryptedToken: string = base64.encode(box);
 
         // Ask the server to validate the token
-        let loginValid: boolean = (
-          await axios.post(
-            "/_/auth", 
-            {
-              decryptedToken: decryptedToken,
-              username: username
-            }
-          )
-        ).data;
+        let loginValid: boolean = (await axios.post("/_/auth", {
+          decryptedToken: decryptedToken,
+          username: username
+        })).data;
 
         if (loginValid) {
           // If the validation succeeds, set the login information
-          let user: UserResponse = (
-            await axios.get(
-              "/_/user", 
-              {
-                params: {
-                  username: username
-                }
-              }
-            )
-          ).data;
+          let user: UserResponse = (await axios.get("/_/user", {
+            params: {
+              username: username
+            }
+          })).data;
           let localPublicKey: Uint8Array = base64.decode(user.publicKey);
           commit("login", {
             username: username,
@@ -132,10 +122,10 @@ export default new Vuex.Store({
             id: user.id
           });
         } else {
-          throw new Error('Login authentication was invalid')
+          throw new Error("Login authentication was invalid");
         }
-      } catch { 
-        commit("incrementLoginFails");   
+      } catch {
+        commit("incrementLoginFails");
       }
     }
   }

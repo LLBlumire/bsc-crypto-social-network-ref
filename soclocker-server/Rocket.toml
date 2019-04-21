@@ -1,6 +1,0 @@
-[global.databases]
-core_db = { url = ".\\datastores\\devel.sqlite" }
-
-[development]
-address = "soclocker.llb.link"
-port = 9000

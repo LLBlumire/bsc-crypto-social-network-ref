@@ -4,3 +4,5 @@
 build.cmd
 
 soclocker-server/src/server_keys
+
+Rocket.toml

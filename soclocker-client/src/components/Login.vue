@@ -60,12 +60,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              type="submit"
-              color="primary"
-              flat
-              :loading="loggingIn"
-            >
+            <v-btn type="submit" color="primary" flat :loading="loggingIn">
               Login
             </v-btn>
           </v-card-actions>
@@ -112,7 +107,7 @@ export default Vue.extend({
       secretKeyRules: [(v: string) => !!v || "Secret Key is required"],
       validLoginForm: true,
       showLogin: false,
-      loggingIn: false,
+      loggingIn: false
     };
   },
   computed: {
