@@ -10,11 +10,11 @@ version = "*"
 [dependencies.rocket_contrib]
 version = "*"
 default-features = false
-features = ["diesel_sqlite_pool", "serve", "json"]
+features = ["diesel_mysql_pool", "serve", "json"]
 
 [dependencies.diesel]
 version = "*"
-features = ["sqlite", "chrono"]
+features = ["mysql", "chrono"]
 
 [dependencies.sodiumoxide]
 version = "*"
