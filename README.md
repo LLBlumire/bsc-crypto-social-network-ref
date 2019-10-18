@@ -23,7 +23,7 @@ through a lengthy sign up process of creating their own keys.
 
 The full paper detailing this, and the ideas behind it, can be found here:
 
-* LINK TO PAPER WILL BE PROVIDED UPON BACHELORS DEGREE COMPLETION
+* [Securing of Social Content with Non Disruptive Cryptography](https://llblumire.co.uk/wp-content/uploads/2019/07/Securing_of_Social_Content_with_non_disruptive_cryptography.pdf)
 
 
 ## License Summary
